@@ -1,4 +1,4 @@
-#dictionary -->  instruction:(func 3,opcode,func7)
+#dictionary -->  instruction:(func3,opcode,func7)
 Rtype={
     "add":("000","0110011","0000000"),
     "sub":("000","0110011","0100000"),
@@ -11,7 +11,7 @@ Rtype={
     "and":("111","0110011","0000000")
 }
 
-#dictionary -->  instruction:(func 3,opcode)
+#dictionary -->  instruction:(func3,opcode)
 Itype={
     "lw":("010","0000011"),
     "addi":("000","0010011"),
@@ -19,12 +19,12 @@ Itype={
     "jalr":("000","1100111")
 }
 
-#dictionary -->  instruction:(func 3,opcode)
+#dictionary -->  instruction:(func3,opcode)
 Stype={
     "sw":("010","0100011")
 }
 
-#dictionary -->  instruction:(func 3,opcode)
+#dictionary -->  instruction:(func3,opcode)
 Btype={
     "beq": ("000", "1100011"),
     "bne": ("001", "1100011"),
@@ -47,7 +47,7 @@ Jtype={
 
 
 register_address= {
-    "zero": "00000",      #zero Hard-wired zero 
+    "zero": "00000",    #zero Hard-wired zero 
     "ra": "00001",      #ra   Return Adress
     "sp": "00010",      #sp   Stack pointer
     "gp": "00011",      #gp   Global pointer
@@ -66,7 +66,7 @@ register_address= {
 
     "a2": "01100",     #a2-a7  Function Arguments
     "a3": "01101",
-    "a4": "01110",#incorrect value assumption
+    "a4": "01110",     #incorrect value assumption
     "a5": "01111",
     "a6": "10000",
     "a7": "10001",
@@ -287,7 +287,7 @@ def assembly_language(instruction, operands):
         opcode = Jtype[instruction]
     else:
         return "Error: Instruction not in ISA"
-
+    
     # Convert operands to binary
     binary_operand = [register_address[op] if op in register_address else op for op in operands]
 
@@ -300,7 +300,7 @@ def assembly_language(instruction, operands):
         return imm_to_bin(int(imm), 12) + rs1 + funct3 + rd + opcode
     elif instruction == "sw":
         rs2, rs1, imm = binary_operand
-        return imm_to_bin(int(imm), 12)[0:7] + rs2 + rs1 + funct3 + imm[7:12] + opcode
+        return imm_to_bin(int(imm), 12)[0:7] + rs2 + rs1 + funct3 + imm_to_bin(int(imm), 12)[7:12] + opcode
     elif instruction in ["beq", "bne", "blt", "bge", "bltu", "bgeu"]:
         if operands == ["zero", "zero", "0"] and instruction == "beq":
             # Virtual halt instruction detected
@@ -309,10 +309,12 @@ def assembly_language(instruction, operands):
         return extend_to_16_bits(int(imm))[0] + extend_to_16_bits(int(imm))[5:11] + rs2 + rs1 + funct3 + \
                extend_to_16_bits(int(imm))[11:] + opcode
     elif instruction in ["lui", "auipc"]:
-        rd, imm = binary_operand
+        rd = binary_operand[0]
+        imm = binary_operand[1]
         return imm_to_bin(int(imm), 32)[0:20] + rd + opcode
     elif instruction == "jal":
-        rd, imm = binary_operand
+        rd = binary_operand[0]
+        imm = binary_operand[1]
         return extend_to_20_bits(int(imm))[0] + extend_to_20_bits(int(imm))[9:19] + extend_to_20_bits(int(imm))[0:9] + rd + opcode
 
 
