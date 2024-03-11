@@ -82,3 +82,4 @@ register_address= {
     "t6": "11111"
 }
 
+#checkin...1 2 3
