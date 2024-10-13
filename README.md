@@ -1,4 +1,4 @@
-# CO-Project
+# RISC-V Assembler & Simulator
 ---
 ## Description:
 - This project mimics the functionality of a RISC-V Assembler.
